@@ -15,7 +15,7 @@ class Connection_Manager(threading.Thread):
         self.complete_flag = 0
         self.end_flag = 0
     def run(self):
-        self.logger.info('%d号连接线程启动' %self.code)
+        self.logger.info('%d号连接线程启动,连接地址总数:%d' %(self.code, len(self.addr_list)))
         count = 0
         total = len(self.addr_list)
         for addr in self.addr_list:
@@ -41,14 +41,15 @@ class Connection_Manager(threading.Thread):
         self.logger.info('%d号线程连接任务完成,线程退出' %self.code)
 
 def create_net(addr_list, block_height, node_list, node_type, timeout, logger):
-    thread_num = int(len(addr_list)/1000) + 1
+    thread_num = 50
+    addr_num = int(len(addr_list)/thread_num)
     code = 0
     thread_list = []
     pointer = 0
     while code < thread_num:
         temp_list = []
-        if len(addr_list) - pointer > 500:
-            for i in range(0, 500):
+        if len(addr_list) - pointer > addr_num:
+            for i in range(0, addr_num):
                 temp_list.append(addr_list[pointer])
                 pointer += 1
         else:
