@@ -18,13 +18,13 @@ main_seed_list = ['seed.bitcoin.sipa.be.',
                   'dnsseed.emzy.de.',
                   'seed.bitcoin.wiz.biz.']
 # 程序日志的存放路径
-log_path = '/root/Reproduction/Reproduction2/log/'
+log_path = '/root/Reproduction/data/log/'
 # 收集的数据的存放路径
-data_log_path = '/root/Reproduction/Reproduction2/data/'
+data_log_path = '/root/Reproduction/data/data/'
 # 节点连接层数
 connect_depth = 5
 # 数据收集定时器
-collect_time = 3600
+collect_time = 7200
 # 每个节点的并行连接数
 parallel_connection_count = 5
 # TCP连接的超时时间
