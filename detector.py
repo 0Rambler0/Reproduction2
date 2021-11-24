@@ -29,12 +29,32 @@ if __name__=='__main__':
     elif net_name == 'mainnet':
         seed_list = main_seed_list
         remote_port = 8333
+    my_resolver = resolver.Resolver()
+    # my_resolver.nameservers = ['8.8.8.8']
     for seed in seed_list:
-        temp_list = resolver.resolve(seed)
+        temp_list = my_resolver.resolve(seed, lifetime=10)
         for addr in temp_list:
             if str(addr) not in addr_list:
                 addr_list.append({'addr':str(addr), 'port':remote_port, 'type':'ipv4'})
-    print('初始连接节点列表:')
+    response = requests.get('https://api.blockchair.com/bitcoin/nodes')
+    data = list(response.json()['data']['nodes'].keys())
+    for addr in data:
+        temp = addr.split(':')
+        if len(temp) > 2:
+            temp = []
+            temp1 = addr.split(':')
+            temp.append(temp1[0])
+            for i in range(1, len(temp1)-1):
+                temp[0] = temp[0] + ':' + temp1[i]
+            temp.append(temp1[len(temp1)-1])
+        else:
+            temp = addr.split(':')
+        if isIP4or6(temp[0]) == 4:
+            type = 'ipv4'
+        elif isIP4or6(temp[0]) == 6:
+            type = 'ipv6'
+        addr_list.append({'addr':temp[0], 'port':int(temp[1]), 'type':type})
+    # print('初始连接节点列表:')
     i = 1
     for addr in addr_list:
         logger.info('地址%d:%s' %(i, addr))
@@ -54,8 +74,8 @@ if __name__=='__main__':
     node_list = [] #储存每个peer的信息
     peer_manager = Peer_Manager(node_list, logger)
     peer_manager.start()
-    create_net1(node_list, addr_list, block_height, 0, 30, logger)
-    i = 0
+    create_net(addr_list, block_height, node_list, 0, 180, logger)
+    '''i = 0
     while i < connect_depth-1:
         temp = [] #暂存新接收到的节点地址
         i += 1
@@ -73,7 +93,7 @@ if __name__=='__main__':
         create_net(temp, block_height, node_list, 0, (i+2)*30, logger)
         for addr in temp:
             if addr not in addr_list:
-                addr_list.append(addr)
+                addr_list.append(addr)'''
     # 开始收集inv消息
     addr_msg_list = [] #储存从各节点接收到的addr消息内容
     tx_list = [] #储存tx hash信息

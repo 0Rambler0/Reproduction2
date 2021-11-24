@@ -132,6 +132,10 @@ def monitor(node_list, timeout):
     tx_list = []
     addr_msg_list = []
     for node in node_list:
+        msg = node.return_addr_msg()
+        if len(msg) > 0:
+            addr_msg_list.append({'addr':node.addr, 'msg':msg})
+    for node in node_list:
         node.start_collect()
     while 1:
         # print('当前捕获交易数量:%d' %(len(tx_list)))
@@ -139,9 +143,6 @@ def monitor(node_list, timeout):
         if now_time - start_time > timeout:
             for node in node_list:
                 tx_list += node.return_inv()
-                msg = node.return_addr_msg()
-                if len(msg) > 0:
-                    addr_msg_list.append({'addr':node.addr, 'msg':msg})
             break
     
     return tx_list, addr_msg_list
